@@ -5,6 +5,7 @@ import { DriveImage } from '../components/DriveImage'
 import { PhotoPicker } from '../components/PhotoPicker'
 import { formatDate, sortKey } from '../lib/dates'
 import type { ProcessedPhoto } from '../lib/photos'
+import { authErrorMessage, ensureSignedIn, isSignedIn } from '../lib/google/auth'
 import { addPhotos, removePhoto, updatePlant, usePlant } from '../lib/store'
 import { gbifUrl } from '../lib/taxonomy'
 import type { Photo, Plant } from '../lib/types'
@@ -14,6 +15,8 @@ export function PlantDetail() {
   const plant = usePlant(id)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string>()
+  // Fotos elegidas que aún no se han podido subir (p. ej. sesión de Google caducada).
+  const [pending, setPending] = useState<ProcessedPhoto[]>([])
   const [openPhoto, setOpenPhoto] = useState<string>()
 
   if (!plant) return <p className="empty">Planta no encontrada. <Link to="/">Volver</Link></p>
@@ -27,12 +30,37 @@ export function PlantDetail() {
     setError(undefined)
     try {
       await addPhotos(plant.id, picked)
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e))
-    } finally {
       picked.forEach((p) => URL.revokeObjectURL(p.previewUrl))
+      setPending([])
+    } catch (e) {
+      setPending(picked)
+      setError(authErrorMessage(e))
+    } finally {
       setUploading(false)
     }
+  }
+
+  // Tras elegir la foto ya no hay «gesto del usuario» para abrir el login de Google,
+  // así que si la sesión caducó las fotos esperan a que se pulse «Conectar y subir».
+  const onPicked = (picked: ProcessedPhoto[]) => {
+    if (isSignedIn()) void upload(picked)
+    else setPending([...pending, ...picked])
+  }
+
+  const connectAndUpload = async () => {
+    try {
+      await ensureSignedIn()
+    } catch (e) {
+      setError(authErrorMessage(e))
+      return
+    }
+    await upload(pending)
+  }
+
+  const dropPending = () => {
+    pending.forEach((p) => URL.revokeObjectURL(p.previewUrl))
+    setPending([])
+    setError(undefined)
   }
 
   return (
@@ -59,8 +87,22 @@ export function PlantDetail() {
       <Facts plant={plant} />
 
       <h3>Fotos ({plant.photos.length})</h3>
-      <PhotoPicker onPicked={upload} />
+      <PhotoPicker onPicked={onPicked} />
       {uploading && <p className="muted">Subiendo a Drive…</p>}
+      {pending.length > 0 && !uploading && (
+        <div className="notice pending">
+          <div className="pending-thumbs">
+            {pending.map((p) => <img key={p.previewUrl} src={p.previewUrl} alt="" />)}
+          </div>
+          <span>{pending.length === 1 ? '1 foto pendiente' : `${pending.length} fotos pendientes`} de subir.</span>
+          <div className="actions">
+            <button type="button" className="secondary small" onClick={dropPending}>Descartar</button>
+            <button type="button" className="small" onClick={() => void connectAndUpload()}>
+              {isSignedIn() ? 'Reintentar' : 'Conectar y subir'}
+            </button>
+          </div>
+        </div>
+      )}
       {error && <p className="error">{error}</p>}
       <ul className="gallery">
         {photos.map((ph) => (

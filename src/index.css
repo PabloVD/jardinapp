@@ -173,3 +173,8 @@ input[aria-invalid='true'] { border-color: var(--danger); }
 
 .settings progress { width: 100%; margin-top: 8px; }
 code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; }
+
+.notice { background: var(--accent-soft); border-radius: 10px; padding: 10px 12px; margin: 8px 0; }
+.notice .actions { margin-top: 8px; }
+.pending-thumbs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+.pending-thumbs img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }

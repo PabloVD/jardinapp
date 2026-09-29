@@ -2,7 +2,7 @@
 // Los componentes lo leen con useCatalog() (useSyncExternalStore).
 
 import { useSyncExternalStore } from 'react'
-import { isSignedIn, NeedsAuthError, onAuthChange } from './google/auth'
+import { ensureSignedIn, hasToken, NeedsAuthError, onAuthChange } from './google/auth'
 import * as drive from './google/drive'
 import { clearState, getBlob, loadState, putBlob, saveState, type CachedState } from './cache'
 import { formatId, mergeCatalogs } from './merge'
@@ -62,7 +62,7 @@ function reportError(e: unknown) {
 }
 
 async function doSync(): Promise<void> {
-  if (!isSignedIn()) {
+  if (!hasToken()) {
     set({ status: 'needsAuth' })
     return
   }
@@ -107,16 +107,16 @@ export function sync(): Promise<void> {
 export async function initStore() {
   const cached = await loadState()
   if (cached) persisted = cached
-  set({ catalog: persisted.catalog, dirty: persisted.dirty, status: isSignedIn() ? 'syncing' : 'needsAuth' })
+  set({ catalog: persisted.catalog, dirty: persisted.dirty, status: hasToken() ? 'syncing' : 'needsAuth' })
   onAuthChange(() => {
-    if (isSignedIn()) void sync()
+    if (hasToken()) void sync()
     else set({ status: 'needsAuth' })
   })
   window.addEventListener('online', () => void sync())
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && isSignedIn()) void sync()
+    if (document.visibilityState === 'visible' && hasToken()) void sync()
   })
-  if (isSignedIn()) await sync()
+  if (hasToken()) await sync()
 }
 
 /** Aplica un cambio local, lo guarda en caché y lo sube a Drive. */
@@ -132,6 +132,8 @@ export const emptyFields = (): PlantFields => ({ commonName: '' })
 
 /** Crea la ficha. Las fotos se suben primero; si falla la subida no se crea nada. */
 export async function createPlant(fields: PlantFields, photos: ProcessedPhoto[]): Promise<string> {
+  // Primero, por si el token caducó: abre el login sin perder la ficha que se está creando.
+  await ensureSignedIn()
   let newId = ''
   // Reservamos el id dentro de la fila para que no se repita.
   await enqueue(async () => {
