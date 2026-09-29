@@ -1,4 +1,4 @@
-# 🌿 Jardín — catálogo de plantas
+# 🌿 JardínApp — catálogo de plantas
 
 PWA (web instalable en el móvil) para llevar un catálogo de plantas con fotos.
 Los datos y las fotos se guardan en **tu propio Google Drive**, en la carpeta `JardinApp/`. No hay servidor, así que cuesta 0 €.

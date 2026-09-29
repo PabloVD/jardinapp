@@ -13,8 +13,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Jardín — catálogo de plantas',
-        short_name: 'Jardín',
+        name: 'JardínApp — catálogo de plantas',
+        short_name: 'JardínApp',
         description: 'Catálogo personal de plantas con fotos en Google Drive',
         lang: 'es',
         theme_color: '#2f6b3b',
