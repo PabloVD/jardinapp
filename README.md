@@ -33,7 +33,7 @@ Guarda una copia local en IndexedDB para arrancar rápido y poder consultar sin 
    - Rellena el nombre de la app y tu email.
    - En *Público / Usuarios de prueba*, **añade tu cuenta de Gmail**.
    - Deja la app en modo **Prueba (Testing)**. No hace falta publicarla ni verificarla.
-4. **Credenciales → Crear credenciales → ID de cliente de OAuth**:
+4. **APIs y servicios → Credenciales → Crear credenciales → ID de cliente de OAuth**:
    - Tipo: **Aplicación web**.
    - *Orígenes de JavaScript autorizados*:
      - `http://localhost:5173`
@@ -75,6 +75,18 @@ Abre la URL en el móvil:
 - Mientras la app esté en modo *Prueba*, Google puede pedirte que vuelvas a dar permiso cada cierto tiempo. Es normal.
 - Borrar una ficha la oculta (la marca como borrada en `plants.json`). Borrar una foto la manda a la papelera de Drive.
 - Si una planta muere, mejor pon la **fecha de defunción** que borrar la ficha. Las fichas con fecha de defunción salen en el filtro *Muertas*.
+
+## Problemas al conectar con Google
+
+| Error | Causa | Solución |
+|---|---|---|
+| `403 access_denied` | La cuenta con la que entras no está en *Usuarios de prueba* | En *Google Auth Platform → Público → Usuarios de prueba*, añade exactamente ese Gmail |
+| `403`: «Access blocked» / «tu organización» | Cuenta de Google Workspace con apps externas bloqueadas | Usa un Gmail personal (añadido como usuario de prueba) |
+| `400 origin_mismatch` | La URL no está en *Orígenes de JavaScript autorizados* | Añade el origen exacto (`http://localhost:5173`, no `127.0.0.1`; sin ruta ni barra final) |
+| La app dice «Falta VITE_GOOGLE_CLIENT_ID» | No existe `.env` o el servidor se arrancó antes de crearlo | Crea `.env` y reinicia `npm run dev` |
+| Login ok, luego `Drive 403` | La Google Drive API no está habilitada | *APIs y servicios → Biblioteca → Google Drive API → Habilitar* |
+
+Los cambios en Google Cloud pueden tardar unos minutos en aplicarse.
 
 ## Stack
 
