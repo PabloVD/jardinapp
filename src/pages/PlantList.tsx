@@ -48,7 +48,7 @@ export function PlantList() {
             <option value="all">Todas</option>
           </select>
           <select value={location} onChange={(e) => setLocation(e.target.value)} aria-label="Localización">
-            <option value="">Todas las zonas</option>
+            <option value="">📍 Todas</option>
             {locations.map((l) => <option key={l} value={l}>{l}</option>)}
           </select>
           <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} aria-label="Orden">

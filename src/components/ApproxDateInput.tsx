@@ -3,9 +3,9 @@ import type { ApproxDate } from '../lib/types'
 
 const QUALIFIERS: [Qualifier, string][] = [
   ['exact', 'Exacta'],
-  ['approx', 'Aprox. (~)'],
-  ['onOrBefore', 'Antes o igual (≤)'],
-  ['onOrAfter', 'Después o igual (≥)'],
+  ['approx', '~ Aprox.'],
+  ['onOrBefore', '≤ Hasta'],
+  ['onOrAfter', '≥ Desde'],
 ]
 const PRECISIONS: [Precision, string][] = [
   ['year', 'Año'],
