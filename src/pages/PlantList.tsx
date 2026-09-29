@@ -23,7 +23,7 @@ export function PlantList() {
   const [query, setQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<Status>('alive')
   const [location, setLocation] = useState('')
-  const [sort, setSort] = useState<Sort>('id')
+  const [sort, setSort] = useState<Sort>('updated')
 
   const live = catalog.plants.filter((p) => !p.deleted)
   const locations = useMemo(() => [...new Set(live.map((p) => p.location).filter(Boolean))].sort() as string[], [live])
@@ -52,10 +52,10 @@ export function PlantList() {
             {locations.map((l) => <option key={l} value={l}>{l}</option>)}
           </select>
           <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} aria-label="Orden">
+            <option value="updated">Editadas ↓</option>
             <option value="id">Por ID</option>
             <option value="name">Por nombre</option>
             <option value="acquired">Adquisición ↓</option>
-            <option value="updated">Editadas ↓</option>
           </select>
         </div>
       </div>
