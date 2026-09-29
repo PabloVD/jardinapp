@@ -49,7 +49,7 @@ export default function App() {
   return (
     <HashRouter>
       <header className="topbar">
-        <Link to="/" className="brand">🌿 Jardín</Link>
+        <Link to="/" className="brand">🌿 JardínApp</Link>
         <span className={`sync-dot ${status}${dirty ? ' dirty' : ''}`} title={STATUS_LABEL[status]} />
         <nav>
           <NavLink to="/" end>Plantas</NavLink>
